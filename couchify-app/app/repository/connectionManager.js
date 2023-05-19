@@ -1,9 +1,9 @@
 require('dotenv').config();
 const couchbase = require('couchbase');
 
-let cluster;
-let bucket;
-let scope;
+let cluster = null;
+let bucket = null;
+let scope = null;
 
 /**
  * In order to preserve the connection, this method will only attempt to
@@ -14,8 +14,9 @@ let scope;
  */
 async function couchbaseConnect ()  {
     if (cluster == null) {
-        console.debug("Connecting to Couchbase...")
+        console.debug("Connecting to Couchbase...");
         // Implement the function here to obtain the cluster reference
+        cluster = await couchbase.connect(process.env.HOST, { username: process.env.USERNAME, password: process.env.PASSWORD});
     }
     return cluster;
 }
@@ -33,6 +34,7 @@ function getBucket(bucketName) {
         if (cluster != null) {
             console.debug(`Fetching the bucket for ${bucketName}`);
             // bucket = (copy the function here to obtain the bucket reference)
+            bucket = cluster.bucket(bucketName);
         } else {
             throw new Error("Cluster connection has not been created");
         }
@@ -54,6 +56,7 @@ function getScope(scopeName) {
         if (bucket != null) {
             console.debug(`Fetching the scope for ${scopeName}`);
              // scope = (copy the function here to obtain the scope reference)
+             scope = bucket.scope(scopeName);
         } else {
             throw new Error("Bucket reference has not been created");
         }
